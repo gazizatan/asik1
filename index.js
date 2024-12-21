@@ -17,6 +17,8 @@ async function sha256(text) {
     return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
 }
 
+//добавьте сюда что то
+
 async function addBlock() {
     await blockchain.addBlock();
 }
