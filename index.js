@@ -16,3 +16,11 @@ async function sha256(text) {
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
 }
+
+async function addBlock() {
+    await blockchain.addBlock();
+}
+
+async function validateBlockchain() {
+    await blockchain.validateBlockchain();
+}
