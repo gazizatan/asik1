@@ -8,16 +8,24 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     async function createMerkleRoot(transactions) {
-        let merkleLayer = transactions.map(tx => sha256(tx));
-        while (merkleLayer.length > 1) {
-            const tempLayer = [];
-            for (let i = 0; i < merkleLayer.length; i += 2) {
-                const pair = merkleLayer[i] + (merkleLayer[i + 1] || merkleLayer[i]);
-                tempLayer.push(await sha256(pair));
-            }
-            merkleLayer = tempLayer;
+        if (transactions.length === 0) {
+            return "";
         }
-        return merkleLayer[0];
+
+        let layer = await Promise.all(transactions.map(tx => sha256(tx)));
+
+        while (layer.length > 1) {
+            const nextLayer = [];
+            for (let i = 0; i < layer.length; i += 2) {
+                const left = layer[i];
+                const right = layer[i + 1] || left; 
+                const combinedHash = await sha256(left + right);
+                nextLayer.push(combinedHash);
+            }
+            layer = nextLayer;
+        }
+
+        return layer[0];
     }
 
     class Block {
@@ -44,14 +52,31 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         createGenesisBlock() {
-            const genesisBlock = new Block("0", []); //No hash
+            const genesisBlock = new Block("0", []); // no hashh
             genesisBlock.timestamp = new Date().toISOString();
-            genesisBlock.hash = sha256("0" + genesisBlock.timestamp + "");//hash of genesis
-            this.chain.push(genesisBlock);
+            sha256("0" + genesisBlock.timestamp + "").then(hash => {
+                genesisBlock.hash = hash; 
+                this.chain.push(genesisBlock);
+            });
         }
 
         async addTransaction(sender, receiver, amount) {
+            const transaction = {
+                sender,
+                receiver,
+                amount
+            };
+
+            if (!this.validateTransaction(transaction)) {
+                console.log("Invalid transaction");
+                return;
+            }
+
             this.pendingTransactions.push(`${sender} -> ${receiver} : ${amount}`);
+        }
+
+        validateTransaction(transaction) {
+            return transaction.amount > 0;
         }
 
         async minePendingTransactions() {
@@ -94,23 +119,24 @@ document.addEventListener("DOMContentLoaded", function () {
                 const blockDiv = document.createElement("div");
                 blockDiv.className = "block";
                 blockDiv.innerHTML = `
-          <h3>Block ${index === 0 ? "0 (Genesis)" : index}</h3>
-          <p><strong>Hash:</strong> ${block.hash}</p>
-          <p><strong>Previous Hash:</strong> ${block.previousHash}</p>
-          <p><strong>Timestamp:</strong> ${block.timestamp}</p>
-          <p><strong>Merkle Root:</strong> ${block.merkleRoot || "N/A"}</p>
-          <h5>Transactions:</h5>
-          <ul>
-            ${block.transactions.length > 0 ? block.transactions.map(tx => `<li>${tx}</li>`).join("") : "<li>No transactions</li>"}
-          </ul>
-        `;
+                    <h3>Block ${index === 0 ? "0 (Genesis)" : index}</h3>
+                    <p><strong>Hash:</strong> ${block.hash}</p>
+                    <p><strong>Previous Hash:</strong> ${block.previousHash}</p>
+                    <p><strong>Timestamp:</strong> ${block.timestamp}</p>
+                    <p><strong>Merkle Root:</strong> ${block.merkleRoot || "N/A"}</p>
+                    <h5>Transactions:</h5>
+                    <ul>
+                        ${block.transactions.length > 0 ? block.transactions.map(tx => `<li>${tx}</li>`).join("") : "<li>No transactions</li>"}
+                    </ul>
+                `;
                 blockchainContainer.appendChild(blockDiv);
             });
         }
     }
 
-    const blockchain = new Blockchain(); //Initialize blockchain
-    //Mine block buton click
+    const blockchain = new Blockchain(); // Инициализация блокчейна
+
+    // Майнинг блоков при клике на кнопку
     document.getElementById("mineBlock").addEventListener("click", async () => {
         await blockchain.addTransaction("Altair", "Aibar", 10);
         await blockchain.addTransaction("Aibar", "Nurbol", 15);
