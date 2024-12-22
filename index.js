@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     function sha256(text) {
         const sha256 = new TextEncoder().encode(text);
-        const hashBuffer = crypto.subtle.digest("SHA-256", sha256);  // Use native crypto API
+        const hashBuffer = crypto.subtle.digest("SHA-256", sha256);  
         return hashBuffer.then(buffer => {
             return Array.from(new Uint8Array(buffer)).map(byte => byte.toString(16).padStart(2, '0')).join('');
         });
@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
         async mineBlock() {
             this.merkleRoot = await createMerkleRoot(this.transactions);
             const blockData = this.previousHash + this.timestamp + this.merkleRoot;
-            this.hash = await sha256(blockData);  // Ensure hash is unique for each block
+            this.hash = await sha256(blockData);
         }
     }
 
@@ -44,9 +44,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         createGenesisBlock() {
-            const genesisBlock = new Block("0", []);  // No previous hash, empty transactions
+            const genesisBlock = new Block("0", []); //No hash
             genesisBlock.timestamp = new Date().toISOString();
-            genesisBlock.hash = sha256("0" + genesisBlock.timestamp + "");  // Hash of genesis block data
+            genesisBlock.hash = sha256("0" + genesisBlock.timestamp + "");//hash of genesis
             this.chain.push(genesisBlock);
         }
 
@@ -109,10 +109,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Initialize blockchain
-    const blockchain = new Blockchain();
-
-    // Handle the "Mine Block" button click
+    const blockchain = new Blockchain(); //Initialize blockchain
+    //Mine block buton click
     document.getElementById("mineBlock").addEventListener("click", async () => {
         await blockchain.addTransaction("Altair", "Aibar", 10);
         await blockchain.addTransaction("Aibar", "Nurbol", 15);
