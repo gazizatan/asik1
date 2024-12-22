@@ -147,13 +147,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 const currentBlock = this.chain[i];
                 const previousBlock = this.chain[i - 1];
         
-                // Проверяем, совпадает ли хэш блока
                 const calculatedHash = hash(currentBlock.previousHash + currentBlock.timestamp + currentBlock.merkleRoot);
                 if (currentBlock.hash !== calculatedHash) {
                     return false;
                 }
         
-                // Проверяем, совпадает ли хэш предыдущего блока
                 if (currentBlock.previousHash !== previousBlock.hash) {
                     return false;
                 }
@@ -182,10 +180,9 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
     }
-    const blockchain = new Blockchain(); // Инициализация блокчейна
-    // Майнинг блоков при клике на кнопку
+    const blockchain = new Blockchain(); 
+    
     document.getElementById("mineBlock").addEventListener("click", async () => {
-        // Добавление транзакций
         blockchain.addTransaction("Altair", "Aibar", 10);
         blockchain.addTransaction("Aibar", "Nurbol", 15);
         blockchain.addTransaction("Nurbol", "Askar", 20);
@@ -197,10 +194,8 @@ document.addEventListener("DOMContentLoaded", function () {
         blockchain.addTransaction("Zhansaya", "Alisher", 50);
         blockchain.addTransaction("Alisher", "Nurdana", 55);
     
-        // Майнинг блока
         await blockchain.minePendingTransactions();
     
-        // Обновление отображения блокчейна
         blockchain.updateBlockchainDisplay();
     });
     
