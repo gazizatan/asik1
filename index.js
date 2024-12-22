@@ -22,8 +22,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     class Block {
         constructor(previousHash, transactions) {
-            this.timestamp = new Date().toISOString();
             this.previousHash = previousHash;
+            this.timestamp = new Date().toISOString();
             this.transactions = transactions;
             this.merkleRoot = '';
             this.hash = '';
