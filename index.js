@@ -225,6 +225,19 @@ function displayBlockchain() {
             </ul>
         `;
 
+        blockDiv.innerHTML = `
+            <strong>Block ${index}</strong><br>
+            <strong>Hash:</strong> ${block.hash}<br>
+            <strong>Previous Hash:</strong> ${block.previousHash}<br>
+            <strong>Merkle Root:</strong> ${block.merkleRoot}<br>
+            <strong>Transactions:</strong><br>
+            <ul>
+                ${block.transactions
+            .map(tx => `<li>${JSON.stringify(tx)}</li>`)
+            .join("")}
+            </ul>
+        `;
+
         blockchainDiv.appendChild(blockDiv);
     });
 }
