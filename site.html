@@ -17,8 +17,17 @@
 <h1>SKY-chain</h1>
 <button id="mineBlock">Mine Block</button>
 <button id="validateBlockchain">Validate Blockchain</button>
+<button id="createTransaction">Create Transaction</button>
 <div id="blockchain"></div>
+<button id="createWallet">Create Wallet</button>
 
 <script src="index.js"></script>
+<script>
+  document.getElementById("createWallet").addEventListener("click", () => {
+    const wallet = new Wallet(); // Create a new wallet
+    const publicKeyStr = `e: ${wallet.publicKey.e}, n: ${wallet.publicKey.n}`; // Format the public key
+    alert(`Wallet created! Public Key: ${publicKeyStr}`); // Display the formatted public key
+  });
+</script>
 </body>
 </html>
